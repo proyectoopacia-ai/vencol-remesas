@@ -17,19 +17,14 @@ function cargarLibreria() {
 async function prepararImagen(nombre) {
   await cargarLibreria();
   await document.fonts.ready;
-  const raiz = document.documentElement;
-  const zoom = raiz.style.zoom;
-  raiz.style.zoom = 1;
-  try {
-    const lienzo = await html2canvas(document.querySelector('main'), {
-      scale: 1, width: 1080, height: 1920, windowWidth: 1080, windowHeight: 1920, scrollX: 0, scrollY: 0,
-      backgroundColor: '#04101f', useCORS: true, logging: false
-    });
-    const blob = await new Promise(r => lienzo.toBlob(r, 'image/png'));
-    return new File([blob], nombre, { type: 'image/png' });
-  } finally {
-    raiz.style.zoom = zoom;
-  }
+  const lienzo = await html2canvas(document.querySelector('main'), {
+    scale: 1, width: 1080, height: 1920, windowWidth: 1080, windowHeight: 1920, scrollX: 0, scrollY: 0,
+    backgroundColor: '#04101f', useCORS: true, logging: false,
+    // La copia se dibuja a tamaño real; la página visible conserva su ajuste
+    onclone: copia => { copia.documentElement.style.zoom = 1; }
+  });
+  const blob = await new Promise(r => lienzo.toBlob(r, 'image/png'));
+  return new File([blob], nombre, { type: 'image/png' });
 }
 
 function descargar(archivo) {
@@ -46,7 +41,7 @@ function prepararCompartir({ mensaje, nombre }) {
   const barra = document.createElement('div');
   barra.dataset.html2canvasIgnore = 'true';
   barra.style.cssText = 'position:fixed;left:0;right:0;bottom:0;display:flex;gap:24px;padding:24px 36px;background:rgba(4,16,31,.94);z-index:9';
-  const base = 'flex:1;min-height:140px;border:0;border-radius:28px;font:800 42px Montserrat,"Segoe UI",sans-serif;cursor:pointer;';
+  const base = 'flex:1;min-height:140px;border:0;border-radius:28px;font:800 42px Montserrat,sans-serif;cursor:pointer;';
   barra.innerHTML = `<button type="button" id="btnImagen" style="${base}background:#0c2748;color:#fff;border:3px solid #e9b44c">Compartir imagen</button>` +
     `<button type="button" id="btnWhatsApp" style="${base}background:#25d366;color:#03281a">Enviar por WhatsApp</button>`;
   document.body.append(barra);
