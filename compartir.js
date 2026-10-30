@@ -25,7 +25,7 @@ async function prepararImagen(nombre) {
       copia.documentElement.style.zoom = 1;
       // html2canvas separa las letras con espaciado negativo y aclara las sombras internas
       const ajustes = copia.createElement('style');
-      ajustes.textContent = '.service { letter-spacing: 0 !important; font-size: 30px !important; } .cta { box-shadow: 0 0 0 3px #f8dc97 !important; background: #1fce6d !important; }';
+      ajustes.textContent = '.service { letter-spacing: 0 !important; font-size: 30px !important; } .cta { box-shadow: none !important; border: 3px solid #f8dc97 !important; background: #1fce6d !important; }';
       copia.head.append(ajustes);
     }
   });
