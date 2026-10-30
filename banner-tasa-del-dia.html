@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>VENCOL Tasa del Día</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&display=block">
+<style>
+  :root {
+    --navy-900: #04101f;
+    --navy-800: #071a33;
+    --navy-700: #0c2748;
+    --line: rgba(255, 255, 255, .13);
+    --emerald: #1fce6d;
+    --emerald-deep: #0a9a50;
+    --gold: #e9b44c;
+    --gold-pale: #f8dc97;
+    --white: #ffffff;
+    --mist: #c9d6e6;
+    --col-yellow: #fcd116;
+    --col-blue: #1b3a93;
+    --col-red: #ce1126;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy-900); }
+  body { font-family: "Montserrat", "Segoe UI", sans-serif; color: var(--white); }
+
+  .banner { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background:
+      radial-gradient(900px 620px at 50% 11%, #15508f 0%, rgba(21, 80, 143, 0) 70%),
+      radial-gradient(800px 700px at 100% 62%, rgba(10, 154, 80, .20) 0%, rgba(10, 154, 80, 0) 70%),
+      radial-gradient(800px 800px at 0% 42%, rgba(21, 80, 143, .34) 0%, rgba(21, 80, 143, 0) 70%),
+      linear-gradient(180deg, var(--navy-800) 0%, var(--navy-900) 100%); }
+
+  /* Fondo */
+  .fx { position: absolute; inset: 0; }
+  .map { position: absolute; opacity: .17; filter: blur(4px) drop-shadow(0 0 22px rgba(31, 206, 109, .55)); }
+  .map.col { left: -70px; top: 96px; width: 400px; }
+  .map.ven { right: -96px; top: 150px; width: 520px; }
+  .grid { background-image:
+      linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+    background-size: 72px 72px; }
+
+  /* Contenido */
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: stretch; padding: 66px 54px 0; }
+
+  .logo-wrap { align-self: center; width: 396px; height: 396px; border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(248,220,151,.35), 0 0 70px rgba(66, 160, 255, .42), 0 22px 50px rgba(0,0,0,.55); }
+  .logo-wrap img { display: block; width: 100%; height: 100%; }
+
+  .title { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 24px; }
+  .title h1 { font-size: 76px; font-weight: 900; letter-spacing: .015em; line-height: 1; white-space: nowrap; }
+  .title svg { width: 70px; height: 70px; flex: none; }
+  .title::before, .title::after { content: ""; flex: 1; height: 3px; }
+  .title::before { background: linear-gradient(90deg, transparent, var(--gold)); }
+  .title::after { background: linear-gradient(270deg, transparent, var(--gold)); }
+
+  .card { border: 1.5px solid var(--line); border-radius: 30px;
+    background: linear-gradient(160deg, rgba(20, 54, 98, .86), rgba(7, 26, 51, .92));
+    box-shadow: 0 20px 44px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12); }
+
+  .rates { position: relative; display: grid; grid-template-columns: 1fr 1.14fr; margin-top: 22px; padding: 0; overflow: hidden;
+    border-color: rgba(233, 180, 76, .65); }
+  .rate { padding: 26px 18px 28px; text-align: center; }
+  .rate .label { font-size: 33px; font-weight: 800; letter-spacing: .1em; color: var(--mist); }
+  .rate .value { margin-top: 8px; font-size: 104px; font-weight: 900; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .rate.vencol { background: linear-gradient(150deg, #10b45c, #067a41); }
+  .rate.vencol .label { color: #eafff3; }
+
+  .table { margin-top: 20px; overflow: hidden; }
+  .thead { display: grid; grid-template-columns: 1.08fr 1.3fr .82fr; align-items: center; height: 80px; padding: 0 30px;
+    background: rgba(255,255,255,.075); border-bottom: 1.5px solid var(--line);
+    font-size: 34px; font-weight: 800; }
+  .thead .send { display: flex; align-items: center; gap: 14px; }
+  .thead .send svg { width: 42px; height: 42px; flex: none; }
+  .thead .bs { text-align: right; }
+  .thead .bcv { text-align: right; color: var(--gold-pale); }
+  .row { display: grid; grid-template-columns: 1.08fr 1.3fr .82fr; align-items: center; height: 84px; padding: 0 30px;
+    font-size: 42px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .row + .row { border-top: 1px solid rgba(255,255,255,.09); }
+  .row .bs { text-align: right; color: #39e585; font-weight: 900; font-size: 44px; white-space: nowrap; }
+  .row .bs small { font-size: 28px; font-weight: 800; }
+  .row .bcv { text-align: right; color: var(--gold-pale); font-size: 40px; }
+
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; margin-top: 20px; }
+  .service { display: flex; align-items: center; gap: 14px; height: 74px; padding: 0 18px;
+    border: 1.5px solid var(--line); border-radius: 18px; background: rgba(12, 39, 72, .8);
+    font-size: 31px; font-weight: 700; letter-spacing: -.012em; white-space: nowrap; }
+  .service svg { width: 40px; height: 40px; flex: none; }
+
+  .trust { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 26px; }
+  .trust div { display: flex; align-items: center; justify-content: center; gap: 12px;
+    font-size: 36px; font-weight: 800; }
+  .trust div + div { border-left: 2px solid rgba(233, 180, 76, .55); }
+  .trust svg { width: 44px; height: 44px; flex: none; }
+
+  .cta { display: flex; align-items: center; justify-content: center; gap: 20px; height: 116px; margin-top: 30px;
+    border-radius: 56px; background: linear-gradient(180deg, #2fe07f 0%, #0fae59 100%);
+    box-shadow: 0 0 0 3px rgba(248,220,151,.75), 0 16px 42px rgba(31, 206, 109, .45), inset 0 2px 0 rgba(255,255,255,.4);
+    color: #03281a; font-size: 45px; font-weight: 900; white-space: nowrap; }
+  .cta svg { width: 62px; height: 62px; flex: none; }
+
+  /* Pie con el mismo arco del logo */
+  .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; }
+  .foot svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .foot p { position: absolute; left: 0; right: 0; top: 66px; text-align: center;
+    color: var(--navy-800); font-size: 50px; font-weight: 800; letter-spacing: .012em; }
+  .tricolor { position: absolute; left: 50%; top: 136px; width: 340px; height: 10px; margin-left: -170px; border-radius: 5px; overflow: hidden; display: flex; }
+  .tricolor i { flex: 1; }
+</style>
+</head>
+<body>
+<main class="banner">
+
+  <div class="fx grid"></div>
+  <img class="map col" src="assets/mapa-colombia.png" alt="">
+  <img class="map ven" src="assets/mapa-venezuela.png" alt="">
+
+  <!-- Líneas financieras -->
+  <svg class="fx" viewBox="0 0 1080 1920" fill="none">
+    <defs>
+      <linearGradient id="trace" x1="0" x2="1">
+        <stop offset="0" stop-color="#1fce6d" stop-opacity="0"/>
+        <stop offset=".55" stop-color="#1fce6d" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#f8dc97" stop-opacity=".8"/>
+      </linearGradient>
+    </defs>
+    <path d="M-10 402 L90 372 L170 392 L262 322 L340 348" stroke="url(#trace)" stroke-width="3"/>
+    <path d="M740 348 L812 318 L880 346 L958 262 L1020 282 L1090 196" stroke="url(#trace)" stroke-width="3"/>
+    <g fill="#1fce6d" opacity=".32">
+      <rect x="28" y="274" width="12" height="70"/><rect x="62" y="240" width="12" height="82"/>
+      <rect x="1006" y="376" width="12" height="62"/><rect x="1040" y="332" width="12" height="88"/>
+    </g>
+    <g stroke="#1fce6d" stroke-width="2" opacity=".32">
+      <path d="M34 256V364M68 222V338M1012 360V452M1046 316V436"/>
+    </g>
+    <g id="particles"></g>
+  </svg>
+
+  <div class="content">
+    <div class="logo-wrap"><img src="assets/logo-vencol.png" alt="VENCOL Remesas"></div>
+
+    <div class="title">
+      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" stroke="#e9b44c" stroke-width="3.5"/>
+        <path d="M17 26h27l-8-8" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M47 38H20l8 8" stroke="#1fce6d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1>TASA DEL DÍA</h1>
+    </div>
+
+    <section class="card rates">
+      <div class="rate">
+        <div class="label">BCV <span id="fecha"></span></div>
+        <div class="value" id="bcv"></div>
+      </div>
+      <div class="rate vencol">
+        <div class="label">TASA VENCOL</div>
+        <div class="value" id="tasa"></div>
+      </div>
+    </section>
+
+    <section class="card table">
+      <div class="thead">
+        <div class="send">
+          <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="3" y="11" width="42" height="26" rx="4" stroke="#39e585" stroke-width="3.5"/>
+            <circle cx="24" cy="24" r="6.5" stroke="#39e585" stroke-width="3.5"/>
+          </svg>
+          Envía COP
+        </div>
+        <div class="bs">Recibe Bs</div>
+        <div class="bcv">Dólar BCV</div>
+      </div>
+      <div id="filas"></div>
+    </section>
+
+    <section class="services" id="services">
+      <div class="service">Pago Móvil</div>
+      <div class="service">Bancolombia</div>
+      <div class="service">Nequi</div>
+      <div class="service">Binance</div>
+      <div class="service">Transferencia inmediata</div>
+      <div class="service">Atención personalizada</div>
+    </section>
+
+    <section class="trust">
+      <div><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M27 3 9 27h13l-3 18 20-26H25z" fill="#39e585"/></svg>Rápido</div>
+      <div><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="8" y="21" width="32" height="23" rx="5" fill="#e9b44c"/><path d="M15 21v-7a9 9 0 0 1 18 0v7" stroke="#e9b44c" stroke-width="4.5"/></svg>Seguro</div>
+      <div><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#1fce6d"/><path d="m14 25 7 7 13-14" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>Confiable</div>
+    </section>
+
+    <div class="cta">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path fill="#03281a" d="M32 4a28 28 0 0 0-24 42L4 60l14.500-3.800A28 28 0 1 0 32 4z"/>
+        <path fill="#fff" d="M45.600 37.500c-.7-.4-4.200-2.100-4.900-2.300-.7-.3-1.100-.4-1.600.3-.5.700-1.800 2.300-2.300 2.800-.4.500-.8.500-1.500.2-.7-.4-3-1.100-5.700-3.500-2.100-1.900-3.500-4.200-3.900-4.900-.4-.7 0-1.100.3-1.500.3-.3.700-.8 1.100-1.200.4-.4.500-.7.700-1.200.2-.5.100-.9-.1-1.300-.2-.4-1.600-3.900-2.200-5.300-.6-1.400-1.200-1.200-1.600-1.200h-1.400c-.5 0-1.300.2-1.900.9-.7.700-2.500 2.500-2.500 6s2.600 7 2.900 7.400c.4.500 5.100 7.800 12.300 10.900 1.700.7 3.100 1.200 4.100 1.500 1.700.5 3.300.5 4.500.3 1.400-.2 4.200-1.700 4.800-3.400.6-1.700.6-3.100.4-3.400-.2-.3-.6-.5-1.300-.9z"/>
+      </svg>
+      Escríbenos por WhatsApp
+    </div>
+  </div>
+
+  <footer class="foot">
+    <svg viewBox="0 0 1080 190" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 52 Q540 -34 1080 52 V190 H0 Z" fill="#1fce6d"/>
+      <path d="M0 64 Q540 -22 1080 64 V190 H0 Z" fill="#eef1f5"/>
+    </svg>
+    <p>Tu dinero llega seguro</p>
+    <div class="tricolor"><i style="background:var(--col-yellow)"></i><i style="background:var(--col-blue)"></i><i style="background:var(--col-red)"></i></div>
+  </footer>
+</main>
+
+<script src="datos.js"></script>
+<script>
+  const MONTOS = [100000, 200000, 500000, 1000000];
+  const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
+  document.getElementById('bcv').textContent = num(BCV, 2);
+  document.getElementById('tasa').textContent = num(TASA, 2);
+  document.getElementById('fecha').textContent = FECHA;
+  document.getElementById('filas').innerHTML = MONTOS.map(cop => {
+    const bs = cop / TASA;
+    return `<div class="row"><span>$${num(cop, 0)}</span><span class="bs"><small>Bs</small> ${num(bs, 2)}</span><span class="bcv">$${num(bs / BCV, 1)}</span></div>`;
+  }).join('');
+
+  // Check verde común a todos los servicios
+  const check = '<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#1fce6d"/><path d="m14 25 7 7 13-14" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document.querySelectorAll('.service').forEach(s => s.insertAdjacentHTML('afterbegin', check));
+
+  // Partículas con semilla fija para que cada exportación salga igual
+  let seed = 20261030;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const g = document.getElementById('particles');
+  let dots = '';
+  for (let i = 0; i < 95; i++) {
+    const gold = rnd() < .3, x = rnd() * 1080, y = rnd() * 1740;
+    // Sin partículas entre el texto suelto: se confunden con puntos
+    if ((y > 470 && y < 570) || y > 1230) continue;
+    dots += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(1.2 + rnd() * 3).toFixed(1)}" fill="${gold ? '#f8dc97' : '#7fe9b4'}" opacity="${(.14 + rnd() * .5).toFixed(2)}"/>`;
+  }
+  g.innerHTML = dots;
+</script>
+</body>
+</html>

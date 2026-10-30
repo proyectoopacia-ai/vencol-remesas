@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>VENCOL Tabla de Tasas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=block">
+<style>
+  :root { --navy-900: #04101f; --navy-800: #071a33; --line: rgba(255,255,255,.13); --gold: #e9b44c; --gold-pale: #f8dc97; --mist: #c9d6e6; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy-900); }
+  body { font-family: "Montserrat", "Segoe UI", sans-serif; color: #fff; }
+  .banner { position: relative; width: 1080px; height: 1920px; overflow: hidden; padding: 56px 46px 0;
+    background:
+      radial-gradient(900px 500px at 50% 5%, #15508f 0%, rgba(21,80,143,0) 70%),
+      radial-gradient(800px 700px at 100% 70%, rgba(10,154,80,.2) 0%, rgba(10,154,80,0) 70%),
+      linear-gradient(180deg, var(--navy-800), var(--navy-900)); }
+  header { display: flex; align-items: center; gap: 30px; }
+  header img { width: 262px; height: 262px; border-radius: 50%; box-shadow: 0 0 60px rgba(66,160,255,.42); flex: none; }
+  h1 { font-size: 66px; font-weight: 900; line-height: 1.04; }
+  .sub { display: flex; gap: 14px; margin-top: 16px; }
+  .chip { padding: 9px 20px; border-radius: 14px; font-size: 31px; font-weight: 800; white-space: nowrap; }
+  .chip.tasa { background: linear-gradient(150deg, #10b45c, #067a41); }
+  .chip.bcv { border: 2px solid var(--gold); color: var(--gold-pale); }
+  .fecha { margin-top: 12px; font-size: 27px; font-weight: 700; color: var(--mist); }
+  .table { margin-top: 28px; border: 1.5px solid rgba(233,180,76,.6); border-radius: 26px; overflow: hidden;
+    background: linear-gradient(160deg, rgba(20,54,98,.88), rgba(7,26,51,.94)); }
+  .fila { display: grid; grid-template-columns: 1.05fr 1.35fr .8fr; align-items: center; height: 82px; padding: 0 28px;
+    font-size: 41px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fila + .fila { border-top: 1px solid rgba(255,255,255,.09); }
+  .fila.head { height: 76px; background: rgba(255,255,255,.08); font-size: 32px; font-weight: 800; }
+  .fila > :nth-child(2), .fila > :nth-child(3) { text-align: right; }
+  .fila > :nth-child(2) { color: #39e585; font-weight: 800; }
+  .fila.head > :nth-child(2) { color: #fff; }
+  .fila > :nth-child(3) { color: var(--gold-pale); }
+  .fila small { font-size: 25px; }
+  footer { position: absolute; left: 0; right: 0; bottom: 0; height: 170px; }
+  footer svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  footer p { position: absolute; left: 0; right: 0; top: 56px; text-align: center; color: var(--navy-800); font-size: 44px; font-weight: 800; }
+  .tri { position: absolute; left: 50%; top: 122px; width: 320px; height: 10px; margin-left: -160px; border-radius: 5px; overflow: hidden; display: flex; }
+  .tri i { flex: 1; }
+</style>
+</head>
+<body>
+<main class="banner">
+  <header>
+    <img src="assets/logo-vencol.png" alt="VENCOL Remesas">
+    <div>
+      <h1>PESOS A BOLÍVARES</h1>
+      <div class="sub"><span class="chip tasa" id="tasa"></span><span class="chip bcv" id="bcv"></span></div>
+      <div class="fecha" id="fecha"></div>
+    </div>
+  </header>
+  <section class="table">
+    <div class="fila head"><span>Envías COP</span><span>Recibe Bs</span><span>Dólar BCV</span></div>
+    <div id="filas"></div>
+  </section>
+  <footer>
+    <svg viewBox="0 0 1080 170" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 46 Q540 -30 1080 46 V170 H0 Z" fill="#1fce6d"/>
+      <path d="M0 58 Q540 -18 1080 58 V170 H0 Z" fill="#eef1f5"/>
+    </svg>
+    <p>Tu dinero llega seguro</p>
+    <div class="tri"><i style="background:#fcd116"></i><i style="background:#1b3a93"></i><i style="background:#ce1126"></i></div>
+  </footer>
+</main>
+<script src="datos.js"></script>
+<script>
+  const MONTOS = [20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 150000, 200000, 250000, 300000, 400000, 500000, 1000000];
+  const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
+  document.getElementById('tasa').textContent = `Tasa ${num(TASA, 2)}`;
+  document.getElementById('bcv').textContent = `BCV ${num(BCV, 2)}`;
+  document.getElementById('fecha').textContent = `Vigente ${FECHA}`;
+  document.getElementById('filas').innerHTML = MONTOS.map(cop => {
+    const bs = cop / TASA;
+    return `<div class="fila"><span>$${num(cop, 0)}</span><span><small>Bs</small> ${num(bs, 2)}</span><span>$${num(bs / BCV, 1)}</span></div>`;
+  }).join('');
+</script>
+</body>
+</html>
