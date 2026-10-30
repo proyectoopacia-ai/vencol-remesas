@@ -6,6 +6,7 @@ Add-Type -AssemblyName System.Drawing
 $piezas = @(
   @{ nombre = 'banner-tasa-del-dia'; tamano = '1080,1920' },
   @{ nombre = 'tabla-completa'; tamano = '1080,1920' },
+  @{ nombre = 'servicios'; tamano = '1080,1920' },
   @{ nombre = 'perfil-whatsapp'; tamano = '1080,1080' },
   @{ nombre = 'portada-whatsapp'; tamano = '1600,900' }
 )
