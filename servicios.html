@@ -19,7 +19,7 @@
       linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
     background-size: 72px 72px; }
-  .map { position: absolute; opacity: .17; filter: blur(4px) drop-shadow(0 0 22px rgba(31,206,109,.55)); }
+  .map { position: absolute; pointer-events: none; opacity: .17; filter: blur(4px) drop-shadow(0 0 22px rgba(31,206,109,.55)); }
   .map.col { left: -90px; top: 100px; width: 400px; }
   .map.ven { right: -110px; top: 150px; width: 520px; }
   .contenido { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 64px 54px 0; }
@@ -85,7 +85,7 @@
   </footer>
 </main>
 
-<script src="compartir.js?v=4"></script>
+<script src="compartir.js?v=5"></script>
 <script>
   // Ajusta la pieza de 1080 px al ancho de la pantalla
   const ajustar = () => { document.documentElement.style.zoom = Math.min(1, document.documentElement.clientWidth / 1080); };

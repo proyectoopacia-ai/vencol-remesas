@@ -48,22 +48,30 @@ function prepararCompartir({ mensaje, nombre }) {
   barra.dataset.html2canvasIgnore = 'true';
   barra.style.cssText = 'position:fixed;left:0;right:0;bottom:0;display:flex;gap:24px;padding:24px 36px;background:rgba(4,16,31,.94);z-index:9';
   const base = 'flex:1;min-height:140px;border:0;border-radius:28px;font:800 42px Montserrat,sans-serif;cursor:pointer;';
-  barra.innerHTML = `<button type="button" id="btnImagen" style="${base}background:#0c2748;color:#fff;border:3px solid #e9b44c">Compartir imagen</button>` +
-    `<button type="button" id="btnWhatsApp" style="${base}background:#25d366;color:#03281a">Enviar por WhatsApp</button>`;
+  const claro = `${base}background:#0c2748;color:#fff;border:3px solid #e9b44c`;
+  barra.innerHTML = `<button type="button" id="btnImagen" style="${claro}">Compartir</button>` +
+    `<button type="button" id="btnGuardar" style="${claro}">Guardar</button>` +
+    `<button type="button" id="btnWhatsApp" style="${base}background:#25d366;color:#03281a">WhatsApp</button>`;
   document.body.append(barra);
   // Espacio para que la barra no tape el final de la pieza
   document.documentElement.style.height = document.body.style.height = '2110px';
 
   const btnImagen = document.getElementById('btnImagen');
-  btnImagen.disabled = true;
+  const btnGuardar = document.getElementById('btnGuardar');
+  btnImagen.disabled = btnGuardar.disabled = true;
   btnImagen.textContent = 'Preparando…';
   imagen = prepararImagen(nombre).then(archivo => {
-    btnImagen.disabled = false;
-    btnImagen.textContent = 'Compartir imagen';
+    btnImagen.disabled = btnGuardar.disabled = false;
+    btnImagen.textContent = 'Compartir';
     return archivo;
   }).catch(() => {
-    btnImagen.textContent = 'Imagen no disponible';
+    btnImagen.textContent = 'No disponible';
     return null;
+  });
+
+  btnGuardar.addEventListener('click', async () => {
+    const archivo = await imagen;
+    if (archivo) descargar(archivo);
   });
 
   btnImagen.addEventListener('click', async () => {

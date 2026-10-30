@@ -34,7 +34,7 @@
 
   /* Fondo */
   .fx { position: absolute; inset: 0; }
-  .map { position: absolute; opacity: .17; filter: blur(4px) drop-shadow(0 0 22px rgba(31, 206, 109, .55)); }
+  .map { position: absolute; pointer-events: none; opacity: .17; filter: blur(4px) drop-shadow(0 0 22px rgba(31, 206, 109, .55)); }
   .map.col { left: -70px; top: 96px; width: 400px; }
   .map.ven { right: -96px; top: 150px; width: 520px; }
   .grid { background-image:
@@ -210,7 +210,7 @@
   </footer>
 </main>
 
-<script src="compartir.js?v=4"></script>
+<script src="compartir.js?v=5"></script>
 <script>
   // Ajusta la pieza de 1080 px al ancho de la pantalla
   const ajustar = () => { document.documentElement.style.zoom = Math.min(1, document.documentElement.clientWidth / 1080); };
