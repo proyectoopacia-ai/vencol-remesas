@@ -213,7 +213,7 @@
 <script src="datos.js"></script>
 <script>
   // Ajusta la pieza de 1080 px al ancho de la pantalla
-  const ajustar = () => { document.documentElement.style.zoom = Math.min(1, window.innerWidth / 1080); };
+  const ajustar = () => { document.documentElement.style.zoom = Math.min(1, document.documentElement.clientWidth / 1080); };
   ajustar();
   addEventListener('resize', ajustar);
 
