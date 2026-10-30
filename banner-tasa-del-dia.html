@@ -210,7 +210,6 @@
   </footer>
 </main>
 
-<script src="datos.js"></script>
 <script>
   // Ajusta la pieza de 1080 px al ancho de la pantalla
   const ajustar = () => { document.documentElement.style.zoom = Math.min(1, document.documentElement.clientWidth / 1080); };
@@ -219,6 +218,7 @@
 
   const MONTOS = [100000, 200000, 500000, 1000000];
   const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pintar = () => {
   document.getElementById('bcv').textContent = num(BCV, 2);
   document.getElementById('tasa').textContent = num(TASA, 2);
   document.getElementById('fecha').textContent = FECHA;
@@ -226,6 +226,13 @@
     const bs = cop / TASA;
     return `<div class="row"><span>$${num(cop, 0)}</span><span class="bs"><small>Bs</small> ${num(bs, 2)}</span><span class="bcv">$${num(bs / BCV, 1)}</span></div>`;
   }).join('');
+  };
+
+  // Pide siempre la tasa más reciente, sin usar la copia guardada del navegador
+  const datos = document.createElement('script');
+  datos.src = `datos.js?t=${Date.now()}`;
+  datos.onload = pintar;
+  document.head.append(datos);
 
   // Check verde común a todos los servicios
   const check = '<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#1fce6d"/><path d="m14 25 7 7 13-14" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';

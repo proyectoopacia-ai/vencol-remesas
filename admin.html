@@ -195,7 +195,7 @@
       if (!r.ok) throw new Error(String(r.status));
       publicado = { bcv, tasa, fecha };
       mostrarVigente();
-      aviso('Tasa guardada. Se verá en los enlaces en unos minutos.', 'ok');
+      aviso('Tasa guardada. En 1 o 2 minutos recarga el enlace para verla.', 'ok');
     } catch (err) {
       const msg = { 401: 'La clave no es válida o venció.', 403: 'La clave no tiene permiso para este repositorio.', 404: 'La clave no tiene acceso a este repositorio.', 409: 'Hubo otro cambio al mismo tiempo. Pulsa Publicar otra vez.' }[err.message];
       aviso(msg || 'No se pudo publicar. Revisa tu conexión e intenta de nuevo.', 'bad');
