@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#071a33">
+<title>Administrador VENCOL</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icono-192.png">
+<style>
+  /* Panel de una columna, pensado para usarse con el pulgar en el celular */
+  :root {
+    --bg: #04101f; --surface: #071a33; --field: #0c2748; --line: #24456e;
+    --fg: #ffffff; --muted: #c9d6e6; --accent: #1fce6d; --gold: #f8dc97; --bad: #ff8a80; --warn: #ffd166;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.45 "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 18px 16px 40px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header img { width: 64px; height: 64px; }
+  h1 { margin: 0; font-size: 22px; }
+  h2 { margin: 0 0 12px; font-size: 17px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  .field { display: grid; gap: 4px; margin-bottom: 12px; }
+  .field label { font-size: 14px; font-weight: 600; }
+  .field small, .hint { color: var(--muted); font-size: 13px; }
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--field); color: var(--fg); font: 600 18px "Segoe UI", Roboto, Arial, sans-serif; }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  button { width: 100%; min-height: 50px; border: 0; border-radius: 10px; background: var(--accent); color: #03281a; font: 700 17px "Segoe UI", Roboto, Arial, sans-serif; cursor: pointer; }
+  button:disabled { opacity: .55; cursor: wait; }
+  button.quiet { min-height: 42px; margin-top: 8px; background: transparent; border: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+  .preview { margin: 0 0 12px; padding: 10px 12px; background: var(--field); border-radius: 10px; font-variant-numeric: tabular-nums; }
+  .estado { margin: 12px 0 0; font-weight: 600; }
+  .ok { color: var(--accent); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  a { color: var(--gold); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="assets/logo-vencol.png" alt="VENCOL Remesas">
+    <div><h1>Administrador</h1><p id="vigente">Cargando tasa publicada…</p></div>
+  </header>
+
+  <section class="panel" id="acceso" hidden>
+    <h2>Acceso de administrador</h2>
+    <div class="field">
+      <label for="token">Clave de GitHub</label>
+      <input id="token" type="password" autocomplete="off" spellcheck="false">
+      <small>Se guarda solo en este dispositivo.</small>
+    </div>
+    <button type="button" id="entrar">Guardar acceso</button>
+  </section>
+
+  <form class="panel" id="tasaForm">
+    <h2>Tasa del día</h2>
+    <div class="pair">
+      <div class="field"><label for="tasa">Tasa VENCOL</label><input id="tasa" inputmode="decimal" autocomplete="off"></div>
+      <div class="field"><label for="bcv">Dólar BCV</label><input id="bcv" inputmode="decimal" autocomplete="off"></div>
+    </div>
+    <div class="field"><label for="fecha">Fecha</label><input id="fecha" type="date"></div>
+    <p class="preview" id="vista"></p>
+    <button type="submit" id="publicar">Publicar tasa</button>
+    <p class="estado" id="estado" role="status"></p>
+  </form>
+
+  <section class="panel">
+    <h2>Revisar margen</h2>
+    <div class="pair">
+      <div class="field"><label for="compra">Compra USDT (COP)</label><input id="compra" inputmode="decimal" autocomplete="off"></div>
+      <div class="field"><label for="venta">Venta USDT (Bs)</label><input id="venta" inputmode="decimal" autocomplete="off"></div>
+    </div>
+    <div class="pair">
+      <div class="field"><label for="costos">Costos (%)</label><input id="costos" inputmode="decimal" autocomplete="off"></div>
+      <div class="field"><label for="piso">Mínimo (%)</label><input id="piso" inputmode="decimal" autocomplete="off"></div>
+    </div>
+    <p class="preview" id="margen">Escribe tus precios reales para ver el margen.</p>
+    <p class="hint">Estos precios se quedan en este dispositivo y no se publican.</p>
+  </section>
+
+  <p class="hint"><a href="tabla-completa.html" target="_blank" rel="noopener">Ver tabla publicada</a> · <a href="banner-tasa-del-dia.html" target="_blank" rel="noopener">Ver banner</a></p>
+  <button type="button" class="quiet" id="salir">Borrar acceso de este dispositivo</button>
+</main>
+
+<script>
+  const API = 'https://api.github.com/repos/proyectoopacia-ai/vencol-remesas/contents/datos.js';
+  const CLAVE = 'vencol-admin-token', PRECIOS = 'vencol-admin-precios';
+  const $ = id => document.getElementById(id);
+  const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
+  // Acepta 3,55 y 3.55; el punto de miles de 1.234,56 también
+  const leer = id => {
+    const t = $(id).value.trim();
+    return parseFloat(t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t);
+  };
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+  const cargar = k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
+  const borrar = k => { try { localStorage.removeItem(k); } catch {} };
+
+  let publicado = null, sha = null, confirmado = false;
+
+  function aviso(texto, tipo) {
+    $('estado').textContent = texto;
+    $('estado').className = 'estado ' + (tipo || '');
+  }
+
+  function decodificar(b64) {
+    const bytes = Uint8Array.from(atob(b64.replace(/\s/g, '')), c => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+
+  function codificar(texto) {
+    return btoa(String.fromCharCode(...new TextEncoder().encode(texto)));
+  }
+
+  function hoy() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  async function traer(token) {
+    const headers = { Accept: 'application/vnd.github+json' };
+    if (token) headers.Authorization = 'Bearer ' + token;
+    const r = await fetch(`${API}?ref=main&t=${Date.now()}`, { headers, cache: 'no-store' });
+    if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json();
+    const texto = decodificar(j.content);
+    const bcv = parseFloat(texto.match(/BCV = ([\d.]+)/)[1]);
+    const tasa = parseFloat(texto.match(/TASA = ([\d.]+)/)[1]);
+    const fecha = texto.match(/FECHA = '([^']+)'/)[1];
+    sha = j.sha;
+    publicado = { bcv, tasa, fecha };
+    return publicado;
+  }
+
+  function vista() {
+    confirmado = false;
+    const tasa = leer('tasa'), bcv = leer('bcv');
+    if (tasa > 0 && bcv > 0) {
+      const bs = 100000 / tasa;
+      $('vista').textContent = `$100.000 → Bs ${num(bs, 2)} → $${num(bs / bcv, 1)} BCV`;
+    } else {
+      $('vista').textContent = 'Escribe la tasa y el dólar BCV.';
+    }
+    margen();
+  }
+
+  function margen() {
+    const tasa = leer('tasa'), compra = leer('compra'), venta = leer('venta'), costos = leer('costos'), piso = leer('piso');
+    guardar(PRECIOS, JSON.stringify({ compra: $('compra').value, venta: $('venta').value, costos: $('costos').value, piso: $('piso').value }));
+    const m = $('margen');
+    if (![tasa, compra, venta, costos, piso].every(n => n >= 0) || !tasa || !compra || !venta) {
+      m.textContent = 'Escribe tus precios reales para ver el margen.';
+      m.className = 'preview';
+      return null;
+    }
+    const neto = (1 - compra / venta / tasa) * 100 - costos;
+    m.textContent = `Margen neto: ${num(neto, 1)} %. Por cada $100.000 quedan ${num(neto * 1000, 0)} COP.`;
+    m.className = 'preview ' + (neto < 0 ? 'bad' : neto < piso ? 'warn' : 'ok');
+    return { neto, piso };
+  }
+
+  async function publicar(e) {
+    e.preventDefault();
+    const token = cargar(CLAVE);
+    if (!token) { $('acceso').hidden = false; $('token').focus(); return aviso('Primero guarda tu clave de acceso.', 'warn'); }
+    const tasa = leer('tasa'), bcv = leer('bcv'), f = $('fecha').value;
+    if (!(tasa > 0) || !(bcv > 0) || !f) return aviso('Completa tasa, dólar BCV y fecha.', 'bad');
+
+    const m = margen();
+    const salto = publicado && (Math.abs(tasa / publicado.tasa - 1) > .1 || Math.abs(bcv / publicado.bcv - 1) > .1);
+    const bajo = m && m.neto < m.piso;
+    if ((salto || bajo) && !confirmado) {
+      confirmado = true;
+      return aviso((bajo ? 'El margen está bajo tu mínimo. ' : 'El valor cambió más de 10 %. ') + 'Revisa y pulsa Publicar otra vez para confirmar.', 'warn');
+    }
+
+    const [a, mes, d] = f.split('-');
+    const fecha = `${d}/${mes}/${a}`;
+    const contenido = `// DATOS DEL DÍA: cambia solo estas tres líneas\nconst BCV = ${bcv};\nconst TASA = ${tasa};\nconst FECHA = '${fecha}';\n`;
+
+    $('publicar').disabled = true;
+    aviso('Publicando…');
+    try {
+      await traer(token);
+      const r = await fetch(API, {
+        method: 'PUT',
+        headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Actualizar tasa ${tasa} del ${fecha}`, content: codificar(contenido), sha, branch: 'main' })
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      publicado = { bcv, tasa, fecha };
+      mostrarVigente();
+      aviso('Tasa guardada. Se verá en los enlaces en unos minutos.', 'ok');
+    } catch (err) {
+      const msg = { 401: 'La clave no es válida o venció.', 403: 'La clave no tiene permiso para este repositorio.', 404: 'La clave no tiene acceso a este repositorio.', 409: 'Hubo otro cambio al mismo tiempo. Pulsa Publicar otra vez.' }[err.message];
+      aviso(msg || 'No se pudo publicar. Revisa tu conexión e intenta de nuevo.', 'bad');
+    } finally {
+      confirmado = false;
+      $('publicar').disabled = false;
+    }
+  }
+
+  function mostrarVigente() {
+    $('vigente').textContent = `Publicada: ${num(publicado.tasa, 2)} · BCV ${num(publicado.bcv, 2)} · ${publicado.fecha}`;
+  }
+
+  async function iniciar() {
+    $('fecha').value = hoy();
+    $('acceso').hidden = !!cargar(CLAVE);
+    try {
+      const p = JSON.parse(cargar(PRECIOS) || '{}');
+      $('compra').value = p.compra || '';
+      $('venta').value = p.venta || '';
+      $('costos').value = p.costos || '0,9';
+      $('piso').value = p.piso || '4';
+    } catch {}
+    try {
+      await traer();
+      $('tasa').value = num(publicado.tasa, 2);
+      $('bcv').value = num(publicado.bcv, 2);
+      mostrarVigente();
+    } catch {
+      $('vigente').textContent = 'No se pudo leer la tasa publicada.';
+    }
+    vista();
+  }
+
+  $('entrar').addEventListener('click', () => {
+    const t = $('token').value.trim();
+    if (!t) return;
+    guardar(CLAVE, t);
+    $('token').value = '';
+    $('acceso').hidden = true;
+    aviso('Acceso guardado en este dispositivo.', 'ok');
+  });
+  $('salir').addEventListener('click', () => {
+    borrar(CLAVE);
+    $('acceso').hidden = false;
+    aviso('Acceso borrado de este dispositivo.', 'ok');
+  });
+  $('tasaForm').addEventListener('submit', publicar);
+  ['tasa', 'bcv'].forEach(id => $(id).addEventListener('input', vista));
+  ['compra', 'venta', 'costos', 'piso'].forEach(id => $(id).addEventListener('input', () => { confirmado = false; margen(); }));
+  iniciar();
+</script>
+</body>
+</html>
