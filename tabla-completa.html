@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1080">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VENCOL Tabla de Tasas</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=block">
 <style>
@@ -66,6 +66,11 @@
 </main>
 <script src="datos.js"></script>
 <script>
+  // Ajusta la pieza de 1080 px al ancho de la pantalla
+  const ajustar = () => { document.documentElement.style.zoom = Math.min(1, window.innerWidth / 1080); };
+  ajustar();
+  addEventListener('resize', ajustar);
+
   const MONTOS = [20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 150000, 200000, 250000, 300000, 400000, 500000, 1000000];
   const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
   document.getElementById('tasa').textContent = `Tasa ${num(TASA, 2)}`;

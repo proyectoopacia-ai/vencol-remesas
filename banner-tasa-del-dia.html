@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1080">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VENCOL Tasa del Día</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&display=block">
 <style>
@@ -212,6 +212,11 @@
 
 <script src="datos.js"></script>
 <script>
+  // Ajusta la pieza de 1080 px al ancho de la pantalla
+  const ajustar = () => { document.documentElement.style.zoom = Math.min(1, window.innerWidth / 1080); };
+  ajustar();
+  addEventListener('resize', ajustar);
+
   const MONTOS = [100000, 200000, 500000, 1000000];
   const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
   document.getElementById('bcv').textContent = num(BCV, 2);
