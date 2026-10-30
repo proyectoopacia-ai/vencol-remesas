@@ -21,7 +21,13 @@ async function prepararImagen(nombre) {
     scale: 1, width: 1080, height: 1920, windowWidth: 1080, windowHeight: 1920, scrollX: 0, scrollY: 0,
     backgroundColor: '#04101f', useCORS: true, logging: false,
     // La copia se dibuja a tamaño real; la página visible conserva su ajuste
-    onclone: copia => { copia.documentElement.style.zoom = 1; }
+    onclone: copia => {
+      copia.documentElement.style.zoom = 1;
+      // html2canvas separa las letras con espaciado negativo y aclara las sombras internas
+      const ajustes = copia.createElement('style');
+      ajustes.textContent = '.service { letter-spacing: 0 !important; font-size: 30px !important; } .cta { box-shadow: 0 0 0 3px #f8dc97 !important; background: #1fce6d !important; }';
+      copia.head.append(ajustes);
+    }
   });
   const blob = await new Promise(r => lienzo.toBlob(r, 'image/png'));
   return new File([blob], nombre, { type: 'image/png' });
