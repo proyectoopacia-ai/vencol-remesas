@@ -114,8 +114,8 @@
 <main class="banner">
 
   <div class="fx grid"></div>
-  <img class="map col" src="assets/mapa-colombia.png" alt="">
-  <img class="map ven" src="assets/mapa-venezuela.png" alt="">
+  <img class="map col" data-html2canvas-ignore src="assets/mapa-colombia.png" alt="">
+  <img class="map ven" data-html2canvas-ignore src="assets/mapa-venezuela.png" alt="">
 
   <!-- Líneas financieras -->
   <svg class="fx" viewBox="0 0 1080 1920" fill="none">
@@ -210,6 +210,7 @@
   </footer>
 </main>
 
+<script src="compartir.js"></script>
 <script>
   // Ajusta la pieza de 1080 px al ancho de la pantalla
   const ajustar = () => { document.documentElement.style.zoom = Math.min(1, document.documentElement.clientWidth / 1080); };
@@ -226,6 +227,7 @@
     const bs = cop / TASA;
     return `<div class="row"><span>$${num(cop, 0)}</span><span class="bs"><small>Bs</small> ${num(bs, 2)}</span><span class="bcv">$${num(bs / BCV, 1)}</span></div>`;
   }).join('');
+  prepararCompartir({ nombre: 'vencol-tasa-del-dia.png', mensaje: `Tasa de hoy VENCOL REMESAS: ${num(TASA, 2)}` });
   };
 
   // Pide siempre la tasa más reciente, sin usar la copia guardada del navegador

@@ -64,6 +64,7 @@
     <div class="tri"><i style="background:#fcd116"></i><i style="background:#1b3a93"></i><i style="background:#ce1126"></i></div>
   </footer>
 </main>
+<script src="compartir.js"></script>
 <script>
   // Ajusta la pieza de 1080 px al ancho de la pantalla
   const ajustar = () => { document.documentElement.style.zoom = Math.min(1, document.documentElement.clientWidth / 1080); };
@@ -80,6 +81,7 @@
     const bs = cop / TASA;
     return `<div class="fila"><span>$${num(cop, 0)}</span><span><small>Bs</small> ${num(bs, 2)}</span><span>$${num(bs / BCV, 1)}</span></div>`;
   }).join('');
+  prepararCompartir({ nombre: 'vencol-tabla-de-tasas.png', mensaje: `Tabla de tasas VENCOL REMESAS. Tasa de hoy: ${num(TASA, 2)}` });
   };
 
   // Pide siempre la tasa más reciente, sin usar la copia guardada del navegador

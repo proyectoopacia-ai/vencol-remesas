@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>VENCOL Portada WhatsApp</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,600&display=block">
+<style>
+  :root { --navy-900: #04101f; --navy-800: #071a33; --line: rgba(255,255,255,.14); --gold: #e9b44c; --mist: #c9d6e6; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 900px; overflow: hidden; background: var(--navy-900); }
+  body { font-family: "Montserrat", "Segoe UI", sans-serif; color: #fff; }
+  .portada { position: relative; display: grid; grid-template-columns: 640px 1fr; align-items: center; gap: 56px; width: 1600px; height: 900px; padding: 60px 72px 90px;
+    background:
+      radial-gradient(760px 620px at 20% 44%, #15508f 0%, rgba(21,80,143,0) 72%),
+      radial-gradient(700px 600px at 100% 100%, rgba(10,154,80,.28) 0%, rgba(10,154,80,0) 72%),
+      linear-gradient(120deg, var(--navy-800), var(--navy-900)); }
+  .logo { width: 640px; height: 640px; border-radius: 50%; box-shadow: 0 0 80px rgba(66,160,255,.42); }
+  h1 { font-size: 78px; font-weight: 900; line-height: 1.05; }
+  .sub { margin-top: 18px; font-size: 40px; font-style: italic; font-weight: 600; color: var(--mist); }
+  .regla { width: 300px; height: 4px; margin: 30px 0; background: linear-gradient(90deg, var(--gold), transparent); }
+  ul { display: grid; gap: 18px; list-style: none; }
+  li { display: flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 800; }
+  li svg { width: 46px; height: 46px; flex: none; }
+  .tricolor { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; display: flex; }
+  .tricolor i { flex: 1; }
+</style>
+</head>
+<body>
+<main class="portada">
+  <img class="logo" src="assets/logo-vencol.png" alt="VENCOL Remesas">
+  <div>
+    <h1>Colombia a Venezuela</h1>
+    <p class="sub">Conectando familias sin fronteras</p>
+    <div class="regla"></div>
+    <ul>
+      <li><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M27 3 9 27h13l-3 18 20-26H25z" fill="#39e585"/></svg>Rápido</li>
+      <li><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="8" y="21" width="32" height="23" rx="5" fill="#e9b44c"/><path d="M15 21v-7a9 9 0 0 1 18 0v7" stroke="#e9b44c" stroke-width="4.5"/></svg>Seguro</li>
+      <li><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#1fce6d"/><path d="m14 25 7 7 13-14" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>Confiable</li>
+    </ul>
+  </div>
+  <div class="tricolor"><i style="background:#fcd116"></i><i style="background:#1b3a93"></i><i style="background:#ce1126"></i></div>
+</main>
+</body>
+</html>
