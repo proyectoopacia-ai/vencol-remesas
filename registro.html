@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#071a33">
+<title>Registro VENCOL</title>
+<style>
+  /* Herramienta de trabajo: tres vistas en una sola columna para usar en el celular */
+  :root {
+    --bg: #04101f; --surface: #071a33; --field: #0c2748; --line: #24456e;
+    --fg: #ffffff; --muted: #c9d6e6; --accent: #1fce6d; --gold: #f8dc97; --bad: #ff8a80; --warn: #ffd166;
+    --font: "Segoe UI", Roboto, Arial, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.45 var(--font); }
+  main { max-width: 760px; margin: 0 auto; padding: 16px 16px 40px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  header img { width: 52px; height: 52px; }
+  header div { flex: 1; min-width: 0; }
+  h1 { margin: 0; font-size: 21px; }
+  header p { margin: 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+  h2 { margin: 0 0 12px; font-size: 17px; }
+  h3 { margin: 14px 0 8px; font-size: 14px; color: var(--muted); }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 12px; min-width: 0; }
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 12px; }
+  .tabs button { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+  .tabs button[aria-selected="true"] { background: var(--field); color: var(--fg); border-color: var(--gold); }
+  .field { display: grid; gap: 4px; margin-bottom: 10px; min-width: 0; }
+  label { font-size: 14px; font-weight: 600; }
+  input, select, textarea { width: 100%; min-height: 44px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--field); color: var(--fg); font: 16px var(--font); }
+  textarea { min-height: 70px; resize: vertical; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  button { min-height: 46px; padding: 8px 12px; border: 0; border-radius: 10px; background: var(--accent); color: #03281a; font: 700 15px var(--font); cursor: pointer; }
+  button:disabled { opacity: .55; cursor: wait; }
+  button.quiet { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  button.danger { background: transparent; border: 1px solid var(--bad); color: var(--bad); }
+  .wide { width: 100%; }
+  .aviso { margin: 10px 0 0; font-weight: 600; }
+  .ok { color: var(--accent); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  .resumen { padding: 10px 12px; background: var(--field); border-radius: 10px; font-variant-numeric: tabular-nums; }
+  .envio { padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; }
+  .envio-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .envio-top b { overflow-wrap: anywhere; }
+  .chip { flex: none; padding: 2px 9px; border: 1px solid currentColor; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .linea { margin: 3px 0; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--gold); }
+  .acciones { display: grid; gap: 8px; margin-top: 10px; }
+  .botones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .tile { padding: 12px; background: var(--field); border-radius: 10px; min-width: 0; }
+  .tile span { display: block; color: var(--muted); font-size: 13px; }
+  .tile b { font-size: 21px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; padding-bottom: 1px; border-bottom: 1px solid var(--line); }
+  .chart div { flex: 1; min-width: 2px; height: 100%; display: flex; align-items: flex-end; }
+  .chart i { display: block; width: 100%; min-height: 2px; background: var(--accent); border-radius: 4px 4px 0 0; }
+  .eje { display: flex; justify-content: space-between; margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 5px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-size: 13px; }
+  [hidden] { display: none !important; }
+  @media (max-width: 420px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="assets/logo-vencol.png" alt="VENCOL Remesas">
+    <div><h1>Registro de envíos</h1><p id="quien">Acceso solo para administradores</p></div>
+    <button type="button" class="quiet" id="salir" hidden>Salir</button>
+  </header>
+
+  <form class="panel" id="login" hidden>
+    <h2>Iniciar sesión</h2>
+    <div class="field"><label for="email">Correo</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="clave">Contraseña</label><input id="clave" type="password" autocomplete="current-password" required></div>
+    <button type="submit" class="wide">Entrar</button>
+    <p class="aviso" id="loginAviso" role="status"></p>
+  </form>
+
+  <div id="app" hidden>
+    <nav class="tabs" role="tablist">
+      <button type="button" role="tab" data-vista="nuevo" aria-selected="true">Nuevo</button>
+      <button type="button" role="tab" data-vista="historial" aria-selected="false">Historial</button>
+      <button type="button" role="tab" data-vista="dashboard" aria-selected="false">Dashboard</button>
+    </nav>
+
+    <form class="panel" id="nuevo">
+      <h2>Nuevo envío</h2>
+      <h3>Quien envía</h3>
+      <div class="field"><label for="remitente_nombre">Nombre completo</label><input id="remitente_nombre" required></div>
+      <div class="pair">
+        <div class="field"><label for="remitente_documento">Documento</label><input id="remitente_documento" required></div>
+        <div class="field"><label for="remitente_telefono">Teléfono</label><input id="remitente_telefono" type="tel" required></div>
+      </div>
+      <div class="field"><label for="metodo_cobro">Cómo pagó</label>
+        <select id="metodo_cobro" required><option>Bancolombia</option><option>Nequi</option><option>Binance</option><option>Otro</option></select>
+      </div>
+
+      <h3>Quien recibe en Venezuela</h3>
+      <div class="field"><label for="beneficiario_nombre">Nombre completo</label><input id="beneficiario_nombre" required></div>
+      <div class="pair">
+        <div class="field"><label for="beneficiario_cedula">Cédula</label><input id="beneficiario_cedula" required></div>
+        <div class="field"><label for="beneficiario_banco">Banco</label><input id="beneficiario_banco" required></div>
+      </div>
+      <div class="pair">
+        <div class="field"><label for="beneficiario_cuenta">Cuenta o Pago Móvil</label><input id="beneficiario_cuenta" required></div>
+        <div class="field"><label for="beneficiario_telefono">Teléfono</label><input id="beneficiario_telefono" type="tel"></div>
+      </div>
+
+      <h3>Monto y costo</h3>
+      <div class="pair">
+        <div class="field"><label for="monto_cop">Pesos recibidos</label><input id="monto_cop" inputmode="decimal" required></div>
+        <div class="field"><label for="tasa">Tasa</label><input id="tasa" inputmode="decimal" required></div>
+      </div>
+      <div class="pair">
+        <div class="field"><label for="monto_bs">Bolívares a entregar</label><input id="monto_bs" inputmode="decimal" required></div>
+        <div class="field"><label for="bcv">Dólar BCV</label><input id="bcv" inputmode="decimal" required></div>
+      </div>
+      <div class="pair">
+        <div class="field"><label for="usdt_compra">Compra USDT (COP)</label><input id="usdt_compra" inputmode="decimal" required></div>
+        <div class="field"><label for="usdt_venta">Venta USDT (Bs)</label><input id="usdt_venta" inputmode="decimal" required></div>
+      </div>
+      <div class="field"><label for="costos_pct">Costos (%)</label><input id="costos_pct" inputmode="decimal" required></div>
+      <p class="resumen" id="calculo">Completa los montos para ver la ganancia.</p>
+
+      <h3>Evidencia</h3>
+      <div class="field"><label for="comprobante_cliente">Comprobante del cliente</label><input id="comprobante_cliente" type="file" accept="image/*,application/pdf" required></div>
+      <div class="field"><label for="notas">Notas</label><textarea id="notas"></textarea></div>
+      <button type="submit" class="wide" id="guardar">Registrar envío</button>
+      <p class="aviso" id="nuevoAviso" role="status"></p>
+    </form>
+
+    <section class="panel" id="historial" hidden>
+      <h2>Historial</h2>
+      <div class="field"><label for="buscar">Buscar por nombre, documento, cuenta o código</label><input id="buscar" type="search"></div>
+      <div class="pair">
+        <div class="field"><label for="filtroEstado">Estado</label>
+          <select id="filtroEstado"><option value="">Todos</option><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option><option value="cancelado">Cancelado</option></select>
+        </div>
+        <div class="field"><label for="exportar">Datos filtrados</label><button type="button" class="quiet" id="exportar">Exportar a Excel</button></div>
+      </div>
+      <div id="lista"></div>
+      <p class="aviso" id="listaAviso" role="status"></p>
+    </section>
+
+    <section class="panel" id="dashboard" hidden>
+      <h2>Dashboard financiero</h2>
+      <div class="field"><label for="periodo">Periodo</label>
+        <select id="periodo"><option value="1">Hoy</option><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="mes">Este mes</option></select>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <h3>Ganancia neta por día (COP)</h3>
+      <div class="chart" id="chart" role="img" aria-label="Ganancia neta por día"></div>
+      <div class="eje" id="eje"></div>
+      <h3>Detalle por día</h3>
+      <div class="wrap"><table><thead><tr><th>Día</th><th>Envíos</th><th>Pesos</th><th>Ganancia</th></tr></thead><tbody id="dias"></tbody></table></div>
+      <h3>Clientes frecuentes</h3>
+      <div class="wrap"><table><thead><tr><th>Cliente</th><th>Envíos</th><th>Pesos</th></tr></thead><tbody id="clientes"></tbody></table></div>
+    </section>
+  </div>
+
+  <p class="aviso warn" id="sinConfig" hidden>El registro todavía no está conectado a la base de datos.</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="supabase-config.js?v=1"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const num = (v, d = 0) => Number(v).toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const leer = id => {
+    const t = $(id).value.trim();
+    return parseFloat(t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t);
+  };
+  const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fechaCorta = f => new Date(f).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' });
+  const diaLocal = f => { const d = new Date(f); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  const COLOR_ESTADO = { pendiente: 'warn', pagado: 'ok', cancelado: 'bad' };
+  const TEXTO_ESTADO = { pendiente: 'Pendiente', pagado: 'Pagado', cancelado: 'Cancelado' };
+
+  const sb = (SUPABASE_URL && SUPABASE_KEY) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  let envios = [], usuario = '';
+
+  function aviso(id, texto, tipo) {
+    $(id).textContent = texto;
+    $(id).className = 'aviso ' + (tipo || '');
+  }
+
+  async function subir(archivo, tipo) {
+    const ext = (archivo.name.split('.').pop() || 'dat').replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const ruta = `${crypto.randomUUID()}-${tipo}.${ext}`;
+    const { error } = await sb.storage.from('comprobantes').upload(ruta, archivo);
+    if (error) throw error;
+    return ruta;
+  }
+
+  async function verComprobante(ruta, enlace) {
+    const { data, error } = await sb.storage.from('comprobantes').createSignedUrl(ruta, 300);
+    if (error) return aviso('listaAviso', 'No se pudo abrir el comprobante.', 'bad');
+    enlace.location.href = data.signedUrl;
+  }
+
+  function calcular() {
+    const cop = leer('monto_cop'), tasa = leer('tasa');
+    if (document.activeElement !== $('monto_bs') && cop > 0 && tasa > 0) $('monto_bs').value = num(cop / tasa, 2);
+    const bs = leer('monto_bs'), compra = leer('usdt_compra'), venta = leer('usdt_venta'), costos = leer('costos_pct');
+    if (![cop, bs, compra, venta, costos].every(n => n >= 0) || !cop || !bs || !venta) {
+      $('calculo').textContent = 'Completa los montos para ver la ganancia.';
+      return;
+    }
+    const ganancia = cop - bs * compra / venta - cop * costos / 100;
+    $('calculo').textContent = `Ganancia neta: ${num(ganancia)} COP (${num(ganancia / cop * 100, 1)} %).`;
+    $('calculo').className = 'resumen ' + (ganancia < 0 ? 'bad' : '');
+  }
+
+  function prellenar() {
+    if (typeof TASA !== 'undefined') {
+      $('tasa').value = num(TASA, 2);
+      $('bcv').value = num(BCV, 2);
+    }
+    try {
+      const p = JSON.parse(localStorage.getItem('vencol-admin-precios') || '{}');
+      $('usdt_compra').value = p.compra || '';
+      $('usdt_venta').value = p.venta || '';
+      $('costos_pct').value = p.costos || '0,9';
+    } catch {}
+    calcular();
+  }
+
+  async function registrar(e) {
+    e.preventDefault();
+    const campos = ['monto_cop', 'tasa', 'monto_bs', 'bcv', 'usdt_compra', 'usdt_venta'];
+    if (!campos.every(id => leer(id) > 0) || !(leer('costos_pct') >= 0)) return aviso('nuevoAviso', 'Revisa los montos: deben ser números mayores que cero.', 'bad');
+    $('guardar').disabled = true;
+    aviso('nuevoAviso', 'Guardando…');
+    try {
+      const comprobante_cliente = await subir($('comprobante_cliente').files[0], 'cliente');
+      const fila = { comprobante_cliente, costos_pct: leer('costos_pct'), notas: $('notas').value.trim() || null, beneficiario_telefono: $('beneficiario_telefono').value.trim() || null };
+      ['remitente_nombre', 'remitente_documento', 'remitente_telefono', 'metodo_cobro', 'beneficiario_nombre', 'beneficiario_cedula', 'beneficiario_banco', 'beneficiario_cuenta']
+        .forEach(id => { fila[id] = $(id).value.trim(); });
+      campos.forEach(id => { fila[id] = leer(id); });
+      const { data, error } = await sb.from('envios').insert(fila).select('codigo').single();
+      if (error) throw error;
+      $('nuevo').reset();
+      prellenar();
+      aviso('nuevoAviso', `Envío ${data.codigo} registrado.`, 'ok');
+      await cargar();
+    } catch {
+      aviso('nuevoAviso', 'No se pudo registrar. Revisa tu conexión y el comprobante (máximo 5 MB).', 'bad');
+    } finally {
+      $('guardar').disabled = false;
+    }
+  }
+
+  async function cargar() {
+    const { data, error } = await sb.from('envios').select('*').order('creado_en', { ascending: false }).limit(5000);
+    if (error) return aviso('listaAviso', 'No se pudo cargar el historial.', 'bad');
+    envios = data;
+    pintarLista();
+    pintarDashboard();
+  }
+
+  function filtrados() {
+    const q = $('buscar').value.trim().toLowerCase(), estado = $('filtroEstado').value;
+    return envios.filter(e => (!estado || e.estado === estado) && (!q ||
+      [e.codigo, e.remitente_nombre, e.remitente_documento, e.beneficiario_nombre, e.beneficiario_cedula, e.beneficiario_cuenta].join(' ').toLowerCase().includes(q)));
+  }
+
+  function pintarLista() {
+    const filas = filtrados();
+    $('lista').innerHTML = filas.length ? filas.map(e => `
+      <article class="envio">
+        <div class="envio-top"><b>${esc(e.codigo)} · $${num(e.monto_cop)}</b><span class="chip ${COLOR_ESTADO[e.estado]}">${TEXTO_ESTADO[e.estado]}</span></div>
+        <p class="linea">${esc(fechaCorta(e.creado_en))} · Tasa ${num(e.tasa, 2)} · Bs ${num(e.monto_bs, 2)}</p>
+        <p class="linea">De: ${esc(e.remitente_nombre)} · Para: ${esc(e.beneficiario_nombre)}</p>
+        <details data-id="${esc(e.id)}">
+          <summary>Ver detalle</summary>
+          <p class="linea">Documento: ${esc(e.remitente_documento)} · Tel: ${esc(e.remitente_telefono)} · Pagó por ${esc(e.metodo_cobro)}</p>
+          <p class="linea">Cédula: ${esc(e.beneficiario_cedula)} · ${esc(e.beneficiario_banco)} · ${esc(e.beneficiario_cuenta)} ${e.beneficiario_telefono ? '· Tel: ' + esc(e.beneficiario_telefono) : ''}</p>
+          <p class="linea">BCV ${num(e.bcv, 2)} · USDT ${num(e.usdt_compra, 2)} COP / ${num(e.usdt_venta, 2)} Bs · Costos ${num(e.costos_pct, 2)} %</p>
+          <p class="linea">Ganancia neta: ${num(e.ganancia_cop)} COP · Registró: ${esc(e.creado_por)}</p>
+          ${e.pagado_en ? `<p class="linea">Pagado: ${esc(fechaCorta(e.pagado_en))}</p>` : ''}
+          ${e.notas ? `<p class="linea">Notas: ${esc(e.notas)}</p>` : ''}
+          <div class="acciones">
+            <div class="botones">
+              ${e.comprobante_cliente ? `<button type="button" class="quiet" data-ver="${esc(e.comprobante_cliente)}">Comprobante cliente</button>` : ''}
+              ${e.comprobante_pago ? `<button type="button" class="quiet" data-ver="${esc(e.comprobante_pago)}">Comprobante pago</button>` : ''}
+            </div>
+            ${e.estado === 'pendiente' ? `
+              <div class="field"><label for="pago-${esc(e.id)}">Comprobante del pago en Venezuela</label><input id="pago-${esc(e.id)}" type="file" accept="image/*,application/pdf"></div>
+              <div class="botones"><button type="button" data-pagar="${esc(e.id)}">Marcar pagado</button><button type="button" class="danger" data-cancelar="${esc(e.id)}">Cancelar envío</button></div>` : ''}
+          </div>
+          <h3>Registro de cambios</h3>
+          <div data-cambios></div>
+        </details>
+      </article>`).join('') : '<p class="linea">No hay envíos con estos filtros.</p>';
+  }
+
+  async function marcarPagado(id, boton) {
+    const archivo = $('pago-' + id).files[0];
+    if (!archivo) return aviso('listaAviso', 'Adjunta primero el comprobante del pago en Venezuela.', 'bad');
+    boton.disabled = true;
+    try {
+      const comprobante_pago = await subir(archivo, 'pago');
+      const { error } = await sb.from('envios').update({ estado: 'pagado', pagado_en: new Date().toISOString(), comprobante_pago }).eq('id', id).eq('estado', 'pendiente');
+      if (error) throw error;
+      aviso('listaAviso', 'Envío marcado como pagado.', 'ok');
+      await cargar();
+    } catch {
+      boton.disabled = false;
+      aviso('listaAviso', 'No se pudo actualizar el envío.', 'bad');
+    }
+  }
+
+  async function cancelar(id, boton) {
+    if (!confirm('¿Cancelar este envío? Quedará en el historial como cancelado.')) return;
+    boton.disabled = true;
+    const { error } = await sb.from('envios').update({ estado: 'cancelado' }).eq('id', id).eq('estado', 'pendiente');
+    if (error) { boton.disabled = false; return aviso('listaAviso', 'No se pudo cancelar el envío.', 'bad'); }
+    aviso('listaAviso', 'Envío cancelado.', 'ok');
+    await cargar();
+  }
+
+  async function cargarCambios(detalle) {
+    const caja = detalle.querySelector('[data-cambios]');
+    if (caja.dataset.listo) return;
+    caja.dataset.listo = '1';
+    const { data, error } = await sb.from('envios_historial').select('accion, actor, fecha, cambios').eq('envio_id', detalle.dataset.id).order('fecha', { ascending: false });
+    if (error) { caja.textContent = 'No se pudo cargar.'; return; }
+    caja.innerHTML = data.map(c => {
+      const texto = c.accion === 'insert' ? 'Creó el registro' : 'Cambió: ' + Object.keys(c.cambios).join(', ');
+      return `<p class="linea">${esc(fechaCorta(c.fecha))} · ${esc(c.actor || 'Sistema')} · ${esc(texto)}</p>`;
+    }).join('');
+  }
+
+  function exportar() {
+    const columnas = ['codigo', 'creado_en', 'estado', 'pagado_en', 'remitente_nombre', 'remitente_documento', 'remitente_telefono', 'metodo_cobro', 'beneficiario_nombre', 'beneficiario_cedula', 'beneficiario_banco', 'beneficiario_cuenta', 'beneficiario_telefono', 'monto_cop', 'tasa', 'monto_bs', 'bcv', 'usdt_compra', 'usdt_venta', 'costos_pct', 'ganancia_cop', 'creado_por', 'notas'];
+    // El apóstrofo evita que Excel ejecute texto escrito como fórmula
+    const celda = v => {
+      let t = String(v ?? '');
+      if (/^[=+\-@]/.test(t)) t = "'" + t;
+      return `"${t.replace(/"/g, '""')}"`;
+    };
+    const csv = [columnas.join(';'), ...filtrados().map(e => columnas.map(c => celda(e[c])).join(';'))].join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+    a.download = `vencol-envios-${diaLocal(new Date())}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+
+  function pintarDashboard() {
+    const periodo = $('periodo').value, hoy = new Date();
+    const desde = periodo === 'mes' ? new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+      : new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - Number(periodo) + 1);
+    const pagados = envios.filter(e => e.estado === 'pagado' && new Date(e.pagado_en) >= desde);
+    const suma = c => pagados.reduce((t, e) => t + Number(e[c]), 0);
+    const cop = suma('monto_cop'), bs = suma('monto_bs'), ganancia = suma('ganancia_cop');
+    const pendientes = envios.filter(e => e.estado === 'pendiente');
+    const tile = (titulo, valor) => `<div class="tile"><span>${titulo}</span><b>${valor}</b></div>`;
+    $('tiles').innerHTML = [
+      tile('Ganancia neta', `$${num(ganancia)}`),
+      tile('Margen promedio', cop ? `${num(ganancia / cop * 100, 1)} %` : '0 %'),
+      tile('Pesos recibidos', `$${num(cop)}`),
+      tile('Bolívares entregados', `Bs ${num(bs, 2)}`),
+      tile('Envíos pagados', num(pagados.length)),
+      tile('Tasa promedio', bs ? num(cop / bs, 2) : '0'),
+      tile('Pendientes', `${num(pendientes.length)} · $${num(pendientes.reduce((t, e) => t + Number(e.monto_cop), 0))}`)
+    ].join('');
+
+    const dias = [];
+    for (let d = new Date(desde); d <= hoy; d.setDate(d.getDate() + 1)) dias.push({ dia: diaLocal(d), envios: 0, cop: 0, ganancia: 0 });
+    const porDia = Object.fromEntries(dias.map(d => [d.dia, d]));
+    pagados.forEach(e => {
+      const d = porDia[diaLocal(e.pagado_en)];
+      if (!d) return;
+      d.envios += 1;
+      d.cop += Number(e.monto_cop);
+      d.ganancia += Number(e.ganancia_cop);
+    });
+    const maximo = Math.max(1, ...dias.map(d => d.ganancia));
+    $('chart').innerHTML = dias.map(d => `<div title="${d.dia}: $${num(d.ganancia)} en ${d.envios} envíos"><i style="height:${Math.max(0, d.ganancia) / maximo * 100}%"></i></div>`).join('');
+    $('eje').innerHTML = `<span>${dias[0].dia.slice(5)}</span><span>${dias.at(-1).dia.slice(5)}</span>`;
+    $('dias').innerHTML = dias.filter(d => d.envios).reverse().map(d => `<tr><td>${d.dia}</td><td>${d.envios}</td><td>$${num(d.cop)}</td><td>$${num(d.ganancia)}</td></tr>`).join('') || '<tr><td colspan="4">Sin envíos pagados en este periodo.</td></tr>';
+
+    const clientes = {};
+    pagados.forEach(e => {
+      const c = clientes[e.remitente_documento] ||= { nombre: e.remitente_nombre, envios: 0, cop: 0 };
+      c.envios += 1;
+      c.cop += Number(e.monto_cop);
+    });
+    $('clientes').innerHTML = Object.values(clientes).sort((a, b) => b.cop - a.cop).slice(0, 5)
+      .map(c => `<tr><td>${esc(c.nombre)}</td><td>${c.envios}</td><td>$${num(c.cop)}</td></tr>`).join('') || '<tr><td colspan="3">Sin datos.</td></tr>';
+  }
+
+  function cambiarVista(vista) {
+    document.querySelectorAll('[data-vista]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.vista === vista)));
+    ['nuevo', 'historial', 'dashboard'].forEach(v => { $(v).hidden = v !== vista; });
+  }
+
+  async function entrarApp(session) {
+    usuario = session.user.email;
+    const { data } = await sb.from('administradores').select('email').limit(1);
+    if (!data || !data.length) {
+      await sb.auth.signOut();
+      $('login').hidden = false;
+      return aviso('loginAviso', 'Este usuario no está autorizado.', 'bad');
+    }
+    $('login').hidden = true;
+    $('app').hidden = false;
+    $('salir').hidden = false;
+    $('quien').textContent = usuario;
+    prellenar();
+    await cargar();
+  }
+
+  function iniciar() {
+    if (!sb) { $('sinConfig').hidden = false; return; }
+
+    $('login').addEventListener('submit', async e => {
+      e.preventDefault();
+      aviso('loginAviso', 'Entrando…');
+      const { data, error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('clave').value });
+      $('clave').value = '';
+      if (error) return aviso('loginAviso', 'Correo o contraseña incorrectos.', 'bad');
+      aviso('loginAviso', '');
+      await entrarApp(data.session);
+    });
+    $('salir').addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+    $('nuevo').addEventListener('submit', registrar);
+    $('nuevo').addEventListener('input', calcular);
+    $('buscar').addEventListener('input', pintarLista);
+    $('filtroEstado').addEventListener('change', pintarLista);
+    $('exportar').addEventListener('click', exportar);
+    $('periodo').addEventListener('change', pintarDashboard);
+    document.querySelector('.tabs').addEventListener('click', e => { if (e.target.dataset.vista) cambiarVista(e.target.dataset.vista); });
+    $('lista').addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.ver) {
+        // La ventana se abre durante el toque para que el celular no la bloquee
+        const ventana = window.open('', '_blank');
+        if (ventana) { ventana.opener = null; verComprobante(b.dataset.ver, ventana); }
+      }
+      if (b.dataset.pagar) marcarPagado(b.dataset.pagar, b);
+      if (b.dataset.cancelar) cancelar(b.dataset.cancelar, b);
+    });
+    $('lista').addEventListener('toggle', e => { if (e.target.open) cargarCambios(e.target); }, true);
+
+    sb.auth.getSession().then(({ data }) => {
+      if (data.session) entrarApp(data.session);
+      else $('login').hidden = false;
+    });
+  }
+
+  const datos = document.createElement('script');
+  datos.src = `datos.js?t=${Date.now()}`;
+  datos.onload = datos.onerror = iniciar;
+  document.head.append(datos);
+</script>
+</body>
+</html>
