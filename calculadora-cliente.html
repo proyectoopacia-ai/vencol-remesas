@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071a33">
+<title>Calculadora VENCOL REMESAS</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap">
+<style>
+  /* Una tarjeta para el celular: el monto arriba y la acción abajo */
+  :root { --bg: #04101f; --surface: #071a33; --field: #0c2748; --line: #24456e; --fg: #fff; --muted: #c9d6e6; --accent: #39e585; --gold: #f8dc97; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; color: var(--fg); font-family: "Montserrat", "Segoe UI", Roboto, Arial, sans-serif;
+    background: radial-gradient(700px 460px at 50% 0, #15508f 0, rgba(21,80,143,0) 72%), var(--bg); }
+  main { max-width: 480px; margin: 0 auto; padding: 22px 16px 32px; }
+  .logo { display: block; width: 150px; height: 150px; margin: 0 auto 12px; border-radius: 50%; box-shadow: 0 0 40px rgba(66,160,255,.42); }
+  h1 { margin: 0; text-align: center; font-size: 25px; font-weight: 900; text-wrap: balance; }
+  .tasas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+  .tasas div { padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); text-align: center; }
+  .tasas span { display: block; color: var(--muted); font-size: 13px; font-weight: 700; }
+  .tasas b { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .tasas .vencol { background: linear-gradient(150deg, #10b45c, #067a41); border-color: transparent; }
+  .tasas .vencol span { color: #eafff3; }
+  .panel { padding: 16px; border-radius: 16px; background: var(--surface); border: 1px solid rgba(233,180,76,.65); }
+  .field { display: grid; gap: 6px; margin-bottom: 14px; }
+  label { font-size: 15px; font-weight: 800; }
+  input { width: 100%; min-height: 58px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--field); color: var(--fg); font: 800 24px "Montserrat", "Segoe UI", Roboto, Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  #bs { color: var(--accent); }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .montos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+  .montos button { min-height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--field); color: var(--fg); font: 700 14px "Montserrat", "Segoe UI", Roboto, Arial, sans-serif; cursor: pointer; }
+  .ref { margin: 0; color: var(--gold); text-align: center; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cta { display: flex; align-items: center; justify-content: center; min-height: 60px; margin-top: 16px; padding: 8px 14px; border-radius: 30px; background: #25d366; color: #03281a; font-size: 18px; font-weight: 900; text-align: center; text-decoration: none; }
+  .nota { margin: 14px 0 0; color: var(--muted); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="assets/logo-vencol.png" alt="VENCOL Remesas">
+  <h1>Calculadora de envíos</h1>
+
+  <section class="tasas">
+    <div class="vencol"><span>Tasa VENCOL</span><b id="tasa">…</b></div>
+    <div><span>Dólar BCV</span><b id="bcv">…</b></div>
+  </section>
+
+  <section class="panel">
+    <div class="field"><label for="cop">Envías en pesos (COP)</label><input id="cop" inputmode="decimal" autocomplete="off"></div>
+    <div class="montos" id="montos">
+      <button type="button" data-cop="50000">50 mil</button>
+      <button type="button" data-cop="100000">100 mil</button>
+      <button type="button" data-cop="200000">200 mil</button>
+      <button type="button" data-cop="500000">500 mil</button>
+    </div>
+    <div class="field"><label for="bs">Recibe en bolívares (Bs)</label><input id="bs" inputmode="decimal" autocomplete="off"></div>
+    <p class="ref" id="ref" role="status"></p>
+    <a class="cta" id="cta" target="_blank" rel="noopener" href="https://wa.me/573105649969">Quiero hacer este envío</a>
+  </section>
+  <p class="nota" id="nota">Cargando la tasa del día…</p>
+</main>
+
+<script>
+  const NUMERO = '573105649969';
+  const $ = id => document.getElementById(id);
+  const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
+  // Lee 100.000 como cien mil y 3,5 como decimal
+  const leer = t => parseFloat(t.trim().replace(/\./g, '').replace(',', '.'));
+
+  function resumen(cop, bs) {
+    if (!(cop > 0)) {
+      $('ref').textContent = '';
+      $('cta').href = `https://wa.me/${NUMERO}`;
+      return;
+    }
+    $('ref').textContent = `Equivale a $${num(bs / BCV, 2)} a dólar BCV`;
+    const texto = `Hola, quiero enviar $${num(cop, 0)} COP para que reciban Bs ${num(bs, 2)} a tasa ${num(TASA, 2)}.`;
+    $('cta').href = `https://wa.me/${NUMERO}?text=${encodeURIComponent(texto)}`;
+  }
+
+  function desdePesos() {
+    const cop = leer($('cop').value);
+    const bs = cop / TASA;
+    $('bs').value = cop > 0 ? num(bs, 2) : '';
+    resumen(cop, bs);
+  }
+
+  function desdeBolivares() {
+    const bs = leer($('bs').value);
+    const cop = bs * TASA;
+    $('cop').value = bs > 0 ? num(Math.ceil(cop), 0) : '';
+    resumen(cop, bs);
+  }
+
+  function iniciar() {
+    $('tasa').textContent = num(TASA, 2);
+    $('bcv').textContent = num(BCV, 2);
+    $('nota').textContent = `Tasa vigente del ${FECHA}. El cliente recibe bolívares; el dólar BCV es solo una referencia. Confirma el monto por WhatsApp antes de pagar.`;
+    $('cop').value = num(100000, 0);
+    $('cop').addEventListener('input', desdePesos);
+    $('bs').addEventListener('input', desdeBolivares);
+    $('montos').addEventListener('click', e => {
+      if (!e.target.dataset.cop) return;
+      $('cop').value = num(Number(e.target.dataset.cop), 0);
+      desdePesos();
+    });
+    desdePesos();
+  }
+
+  // Pide siempre la tasa más reciente, sin usar la copia guardada del navegador
+  const datos = document.createElement('script');
+  datos.src = `datos.js?t=${Date.now()}`;
+  datos.onload = iniciar;
+  datos.onerror = () => { $('nota').textContent = 'No se pudo cargar la tasa. Recarga la página.'; };
+  document.head.append(datos);
+</script>
+</body>
+</html>
