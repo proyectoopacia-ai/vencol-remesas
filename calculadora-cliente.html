@@ -29,7 +29,19 @@
   input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   .montos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
   .montos button { min-height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--field); color: var(--fg); font: 700 14px "Montserrat", "Segoe UI", Roboto, Arial, sans-serif; cursor: pointer; }
-  .ref { margin: 0; color: var(--gold); text-align: center; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #usd { color: var(--gold); }
+  .bloque { margin-top: 14px; }
+  h2 { margin: 0 0 10px; font-size: 18px; font-weight: 800; }
+  .fila { display: grid; grid-template-columns: 1fr 1.25fr .75fr; align-items: center; min-height: 38px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fila + .fila, #tabla .fila { border-top: 1px solid var(--line); }
+  .fila > :nth-child(2), .fila > :nth-child(3) { text-align: right; }
+  .fila > :nth-child(2) { color: var(--accent); }
+  .fila > :nth-child(3) { color: var(--gold); }
+  .cabecera { color: var(--muted); font-size: 12px; }
+  .cabecera > :nth-child(2), .cabecera > :nth-child(3) { color: var(--muted); }
+  .pagos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .pagos li { padding: 10px; border-radius: 10px; background: var(--field); font-size: 14px; font-weight: 700; }
+  .confianza { margin: 12px 0 0; color: var(--accent); text-align: center; font-size: 15px; font-weight: 800; }
   .cta { display: flex; align-items: center; justify-content: center; min-height: 60px; margin-top: 16px; padding: 8px 14px; border-radius: 30px; background: #25d366; color: #03281a; font-size: 18px; font-weight: 900; text-align: center; text-decoration: none; }
   .nota { margin: 14px 0 0; color: var(--muted); font-size: 13px; text-align: center; }
 </style>
@@ -53,14 +65,35 @@
       <button type="button" data-cop="500000">500 mil</button>
     </div>
     <div class="field"><label for="bs">Recibe en bolívares (Bs)</label><input id="bs" inputmode="decimal" autocomplete="off"></div>
-    <p class="ref" id="ref" role="status"></p>
+    <div class="field"><label for="usd">Equivalente en dólar BCV (USD)</label><input id="usd" inputmode="decimal" autocomplete="off"></div>
     <a class="cta" id="cta" target="_blank" rel="noopener" href="https://wa.me/573105649969">Quiero hacer este envío</a>
   </section>
+
+  <section class="panel bloque">
+    <h2>Tabla de montos</h2>
+    <div class="fila cabecera"><span>Envías COP</span><span>Recibe Bs</span><span>Dólar BCV</span></div>
+    <div id="tabla"></div>
+  </section>
+
+  <section class="panel bloque">
+    <h2>Métodos de pago</h2>
+    <ul class="pagos">
+      <li>Pago Móvil</li>
+      <li>Bancolombia</li>
+      <li>Nequi</li>
+      <li>Binance</li>
+      <li>Transferencia inmediata</li>
+      <li>Atención personalizada</li>
+    </ul>
+    <p class="confianza">Rápido · Seguro · Confiable</p>
+  </section>
+
   <p class="nota" id="nota">Cargando la tasa del día…</p>
 </main>
 
 <script>
   const NUMERO = '573105649969';
+  const MONTOS = [20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 150000, 200000, 250000, 300000, 400000, 500000, 1000000];
   const $ = id => document.getElementById(id);
   const num = (v, d) => v.toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d });
   // Lee 100.000 como cien mil y 3,5 como decimal
@@ -68,11 +101,9 @@
 
   function resumen(cop, bs) {
     if (!(cop > 0)) {
-      $('ref').textContent = '';
       $('cta').href = `https://wa.me/${NUMERO}`;
       return;
     }
-    $('ref').textContent = `Equivale a $${num(bs / BCV, 2)} a dólar BCV`;
     const texto = `Hola, quiero enviar $${num(cop, 0)} COP para que reciban Bs ${num(bs, 2)} a tasa ${num(TASA, 2)}.`;
     $('cta').href = `https://wa.me/${NUMERO}?text=${encodeURIComponent(texto)}`;
   }
@@ -81,6 +112,7 @@
     const cop = leer($('cop').value);
     const bs = cop / TASA;
     $('bs').value = cop > 0 ? num(bs, 2) : '';
+    $('usd').value = cop > 0 ? num(bs / BCV, 2) : '';
     resumen(cop, bs);
   }
 
@@ -88,13 +120,28 @@
     const bs = leer($('bs').value);
     const cop = bs * TASA;
     $('cop').value = bs > 0 ? num(Math.ceil(cop), 0) : '';
+    $('usd').value = bs > 0 ? num(bs / BCV, 2) : '';
+    resumen(cop, bs);
+  }
+
+  function desdeDolares() {
+    const usd = leer($('usd').value);
+    const bs = usd * BCV;
+    const cop = bs * TASA;
+    $('cop').value = usd > 0 ? num(Math.ceil(cop), 0) : '';
+    $('bs').value = usd > 0 ? num(bs, 2) : '';
     resumen(cop, bs);
   }
 
   function iniciar() {
     $('tasa').textContent = num(TASA, 2);
     $('bcv').textContent = num(BCV, 2);
-    $('nota').textContent = `Tasa vigente del ${FECHA}. El cliente recibe bolívares; el dólar BCV es solo una referencia. Confirma el monto por WhatsApp antes de pagar.`;
+    $('nota').textContent = `Tasa vigente del ${FECHA}. El pago se recibe en bolívares; el dólar BCV es solo una referencia. Confirma el monto por WhatsApp antes de pagar.`;
+    $('tabla').innerHTML = MONTOS.map(cop => {
+      const bs = cop / TASA;
+      return `<div class="fila"><span>$${num(cop, 0)}</span><span>Bs ${num(bs, 2)}</span><span>$${num(bs / BCV, 1)}</span></div>`;
+    }).join('');
+    $('usd').addEventListener('input', desdeDolares);
     $('cop').value = num(100000, 0);
     $('cop').addEventListener('input', desdePesos);
     $('bs').addEventListener('input', desdeBolivares);
