@@ -158,8 +158,10 @@
       m.className = 'preview';
       return null;
     }
-    const neto = (1 - compra / venta / tasa) * 100 - costos;
-    m.textContent = `Margen neto: ${num(neto, 1)} %. Por cada $100.000 quedan ${num(neto * 1000, 0)} COP.`;
+    const costoBs = compra / venta;
+    const neto = (1 - costoBs / tasa) * 100 - costos;
+    const minima = Math.ceil(costoBs / (1 - (costos + piso) / 100) * 100) / 100;
+    m.textContent = `Costo por bolívar: ${num(costoBs, 3)} COP. Tasa mínima para tu margen: ${num(minima, 2)}. Con tasa ${num(tasa, 2)}, margen neto de ${num(neto, 1)} %: ${num(neto * 1000, 0)} COP por cada $100.000.`;
     m.className = 'preview ' + (neto < 0 ? 'bad' : neto < piso ? 'warn' : 'ok');
     return { neto, piso };
   }
