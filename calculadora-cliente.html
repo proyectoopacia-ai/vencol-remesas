@@ -104,7 +104,7 @@
       $('cta').href = `https://wa.me/${NUMERO}`;
       return;
     }
-    const texto = `Hola, quiero enviar $${num(cop, 0)} COP para que reciban Bs ${num(bs, 2)} a tasa ${num(TASA, 2)}.`;
+    const texto = `Hola, quiero enviar $${num(Math.ceil(cop), 0)} COP para que reciban Bs ${num(bs, 2)} a tasa ${num(TASA, 2)}.`;
     $('cta').href = `https://wa.me/${NUMERO}?text=${encodeURIComponent(texto)}`;
   }
 
